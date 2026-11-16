@@ -1,0 +1,8 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: auth
+  data:
+    redis:
+      url: redis://localhost:6379
