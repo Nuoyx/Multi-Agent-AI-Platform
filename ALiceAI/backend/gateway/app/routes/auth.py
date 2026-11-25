@@ -1,10 +1,10 @@
-import httpx
 from fastapi import APIRouter, Request
-from fastapi.responses import JSONResponse, Response
+from fastapi.responses import JSONResponse
 
 from app.config import settings
+from app.utils.proxy import proxy_request
 
-router = APIRouter(prefix="/auth", tags=["auth"])
+router = APIRouter(tags=["auth"])
 
 
 @router.post("/login")
@@ -16,36 +16,10 @@ async def login(request: Request):
             status_code=403,
         )
 
-    try:
-        async with httpx.AsyncClient(timeout=10.0) as client:
-            upstream = await client.post(
-                f"{settings.auth_service_url.rstrip('/')}/login",
-                content=await request.body(),
-                headers={
-                    "Content-Type": request.headers.get(
-                        "content-type", "application/json"
-                    ),
-                    "Cookie": request.headers.get("cookie", ""),
-                },
-            )
-    except httpx.RequestError:
-        return JSONResponse(
-            {"message": "Auth service is unreachable"},
-            status_code=503,
-            headers={"Cache-Control": "no-store"},
-        )
-
-    response = Response(
-        content=upstream.content,
-        status_code=upstream.status_code,
-        headers={"Cache-Control": "no-store"},
+    return await proxy_request(
+        request,
+        f"{settings.auth_service_url.rstrip('/')}/login",
+        service_name="Auth",
+        forward_credentials=True,
     )
-
-    if "content-type" in upstream.headers:
-        response.headers["Content-Type"] = upstream.headers["content-type"]
-
-    for cookie in upstream.headers.get_list("set-cookie"):
-        response.headers.append("Set-Cookie", cookie)
-
-    return response
 

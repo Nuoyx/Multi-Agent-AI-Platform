@@ -4,7 +4,7 @@ from fastapi.responses import JSONResponse
 router = APIRouter(tags=["users"])
 
 
-@router.get("/me")
+@router.get("")
 async def get_current_user(request: Request):
     try:
         return JSONResponse(

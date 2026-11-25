@@ -19,8 +19,14 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
       - type: bind
+        source: ./ALiceAI/backend/db/init_databases.sql
+        target: /docker-entrypoint-initdb.d/001_init_databases.sql
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
         source: ./ALiceAI/backend/services/auth/db/create_users.sql
-        target: /docker-entrypoint-initdb.d/001_create_users.sql
+        target: /opt/aliceai/create_users.sql
         read_only: true
         bind:
           create_host_path: false

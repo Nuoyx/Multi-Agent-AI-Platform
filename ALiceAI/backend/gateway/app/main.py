@@ -7,7 +7,9 @@ from starlette.concurrency import run_in_threadpool
 
 from app.config import settings
 from app.config.cors import configure_cors
+from app.routes.agent import router as agent_router
 from app.routes.auth import router as auth_router
+from app.routes.chat import router as chat_router
 from app.routes.user import router as user_router
 from app.middleware.auth_middleware import auth_middleware
 
@@ -33,15 +35,24 @@ app = FastAPI(
 
 @app.middleware("http")
 async def authenticate_request(request: Request, call_next):
-    if request.url.path.rstrip("/") == "/api/me":
+    path = request.url.path.rstrip("/")
+    if (
+        path == "/api/me"
+        or path.startswith("/api/chat/")
+        or path == "/api/agent"
+        or path.startswith("/api/agent/")
+    ):
         return await auth_middleware(request, call_next)
 
     return await call_next(request)
 
 configure_cors(app)
 
-app.include_router(auth_router, prefix="/api")
-app.include_router(user_router, prefix="/api")
+app.include_router(auth_router, prefix="/api/auth")
+app.include_router(user_router, prefix="/api/me")
+app.include_router(chat_router, prefix="/api/chat")
+app.include_router(agent_router, prefix="/api/agent")
+
 
 @app.get("/")
 async def health():

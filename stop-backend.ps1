@@ -5,6 +5,8 @@ $ErrorActionPreference = 'Stop'
 $services = @{
     'Gateway' = 'ALiceAI\backend\gateway'
     'Auth' = 'ALiceAI\backend\services\auth'
+    'Chat' = 'ALiceAI\backend\services\chat'
+    'Agent' = 'ALiceAI\backend\services\agent'
 }
 
 $processes = @(Get-CimInstance Win32_Process)
@@ -35,5 +37,5 @@ foreach ($service in $services.GetEnumerator()) {
 }
 
 if ($matched -eq 0) {
-    Write-Output 'No running Gateway or Auth Uvicorn service found for this project.'
+    Write-Output 'No running Gateway, Auth, Chat, or Agent Uvicorn service found for this project.'
 }
