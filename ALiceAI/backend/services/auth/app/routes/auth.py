@@ -57,7 +57,7 @@ def login(body: LoginRequest, request: Request):
             headers=headers,
         )
 
-    response = JSONResponse(user, headers=headers)
+    response = JSONResponse({"user": user}, headers=headers)
     response.set_cookie(
         key="session_id",
         value=session_id,

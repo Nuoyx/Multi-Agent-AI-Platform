@@ -29,7 +29,7 @@ class LoginSessionTests(unittest.TestCase):
     def test_cookie_matches_stored_session_and_expiry(self):
         response = self.call_login()
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(json.loads(response.body), self.user)
+        self.assertEqual(json.loads(response.body), {"user": self.user})
         cookie = SimpleCookie(response.headers["set-cookie"])["session_id"]
         self.assertTrue(cookie["httponly"])
         self.assertEqual(cookie["samesite"], "strict")
