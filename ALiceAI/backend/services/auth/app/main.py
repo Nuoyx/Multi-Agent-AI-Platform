@@ -5,13 +5,12 @@ from fastapi import FastAPI
 from aliceai_shared.redis.client import create_redis_client
 
 from app.config import settings
+from app.config.firebase import initialize_firebase
 from app.routes.auth import router as auth_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    firebase_app = firebase_admin.initialize_app(
-        options={"projectId": "aliceai-ae27f"}
-    )
+    firebase_app = initialize_firebase()
     app.state.firebase_app = firebase_app
 
     try:

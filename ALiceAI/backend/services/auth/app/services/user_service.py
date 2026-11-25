@@ -1,6 +1,6 @@
 from sqlalchemy.dialects.postgresql import insert
 
-from app.database import SessionLocal
+from app.config.database import SessionLocal
 from app.models import User
 
 
